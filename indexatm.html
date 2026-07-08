@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EGP ATM Machine</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+
+body{
+    background:#f0f4f8;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:40px 20px;
+    min-height:100vh;
+}
+
+.wrap{width:100%;max-width:680px}
+
+.card{
+    background:#ffffff;
+    border:1px solid #e2e8f0;
+    border-radius:16px;
+    padding:28px;
+    box-shadow:0 4px 16px rgba(0,0,0,.07);
+}
+
+/* Header */
+.atm-header{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:24px;
+    padding-bottom:20px;
+    border-bottom:1px solid #e2e8f0;
+}
+
+.atm-icon{
+    width:44px;
+    height:44px;
+    border-radius:12px;
+    background:#185FA5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+
+.atm-icon i{color:#fff;font-size:22px}
+
+.atm-title{font-size:20px;font-weight:700;color:#1a202c}
+.atm-sub{font-size:13px;color:#718096;margin-top:2px}
+
+/* Account panel */
+.account-panel{
+    background:#f7fafc;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    padding:16px 20px;
+    margin-bottom:20px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+
+.avatar{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background:#ebf4ff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:17px;
+    font-weight:700;
+    color:#185FA5;
+    flex-shrink:0;
+    border:1.5px solid #bee3f8;
+}
+
+.avatar i{font-size:22px}
+
+.acct-info{flex:1;min-width:0}
+
+.acct-label{
+    font-size:11px;
+    color:#a0aec0;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+    margin-bottom:3px;
+    font-weight:600;
+}
+
+.acct-name{
+    font-size:16px;
+    font-weight:600;
+    color:#2d3748;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.acct-hint{font-size:12px;color:#a0aec0;margin-top:2px}
+
+/* Balance strip */
+.balance-strip{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.stat{
+    background:#f7fafc;
+    border-radius:10px;
+    padding:14px 16px;
+    border:1px solid #e2e8f0;
+}
+
+.stat-label{
+    font-size:11px;
+    color:#718096;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:6px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-weight:600;
+}
+
+.stat-label i{font-size:14px}
+.stat-value{font-size:24px;font-weight:700;color:#276749}
+.stat-count{font-size:24px;font-weight:700;color:#2d3748}
+
+/* Section label */
+.section-label{
+    font-size:11px;
+    font-weight:700;
+    color:#718096;
+    text-transform:uppercase;
+    letter-spacing:.7px;
+    margin-bottom:8px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+}
+
+.section-label i{font-size:14px}
+
+/* Name row */
+.name-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:20px;
+}
+
+.name-row input{
+    flex:1;
+    padding:10px 14px;
+    font-size:14px;
+    border:1px solid #cbd5e0;
+    border-radius:8px;
+    background:#fff;
+    color:#2d3748;
+    transition:border-color .2s;
+}
+
+.name-row input:focus{
+    outline:none;
+    border-color:#185FA5;
+    box-shadow:0 0 0 3px rgba(24,95,165,.1);
+}
+
+.name-row button{
+    padding:10px 18px;
+    border:none;
+    background:#185FA5;
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+    border-radius:8px;
+    cursor:pointer;
+    white-space:nowrap;
+    flex-shrink:0;
+    transition:background .2s;
+}
+
+.name-row button:hover{background:#0C447C}
+
+/* Amount row */
+.amount-row{
+    position:relative;
+    margin-bottom:20px;
+}
+
+.amount-row input{
+    width:100%;
+    padding:11px 14px 11px 38px;
+    font-size:16px;
+    border:1px solid #cbd5e0;
+    border-radius:8px;
+    background:#fff;
+    color:#2d3748;
+    transition:border-color .2s;
+}
+
+.amount-row input:focus{
+    outline:none;
+    border-color:#185FA5;
+    box-shadow:0 0 0 3px rgba(24,95,165,.1);
+}
+
+.peso-sign{
+    position:absolute;
+    left:14px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:15px;
+    color:#a0aec0;
+    pointer-events:none;
+    font-weight:600;
+}
+
+/* Transaction buttons */
+.txn-btns{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.btn-txn{
+    padding:12px 8px;
+    border:1.5px solid #e2e8f0;
+    background:#fff;
+    color:#2d3748;
+    font-size:13px;
+    font-weight:600;
+    border-radius:10px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    transition:all .2s;
+}
+
+.btn-txn:hover{background:#f7fafc;transform:translateY(-1px);}
+.btn-txn:active{transform:translateY(0)}
+.btn-txn i{font-size:17px}
+
+.btn-txn.deposit{border-color:#9ae6b4;color:#276749}
+.btn-txn.deposit:hover{background:#f0fff4}
+
+.btn-txn.withdraw{border-color:#feb2b2;color:#9b2c2c}
+.btn-txn.withdraw:hover{background:#fff5f5}
+
+/* Message box */
+.msg-box{
+    padding:11px 16px;
+    border-radius:10px;
+    font-size:13px;
+    color:#4a5568;
+    background:#f7fafc;
+    border:1px solid #e2e8f0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.msg-box i{font-size:18px;flex-shrink:0}
+
+/* Divider */
+.divider{border:none;border-top:1px solid #e2e8f0;margin:20px 0}
+
+/* Table */
+.log-wrap{overflow-x:auto;border-radius:10px;border:1px solid #e2e8f0}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+    table-layout:fixed;
+}
+
+thead th{
+    background:#f7fafc;
+    padding:10px 12px;
+    text-align:left;
+    font-size:11px;
+    font-weight:700;
+    color:#718096;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    border-bottom:1px solid #e2e8f0;
+}
+
+thead th:nth-child(1){width:38px}
+thead th:nth-child(5),thead th:nth-child(6){text-align:right}
+
+tbody td{
+    padding:11px 12px;
+    border-bottom:1px solid #f0f4f8;
+    color:#2d3748;
+    vertical-align:middle;
+}
+
+tbody td:nth-child(5),tbody td:nth-child(6){text-align:right}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#f7fafc}
+
+/* Badges */
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    padding:3px 10px;
+    border-radius:99px;
+    font-size:11px;
+    font-weight:700;
+}
+
+.badge i{font-size:11px}
+.badge.deposit{background:#f0fff4;color:#276749;border:1px solid #9ae6b4}
+.badge.withdraw{background:#fff5f5;color:#9b2c2c;border:1px solid #feb2b2}
+.badge.inquiry{background:#ebf8ff;color:#2b6cb0;border:1px solid #90cdf4}
+
+/* Empty state */
+.empty-log{
+    text-align:center;
+    padding:2.5rem 0;
+    color:#a0aec0;
+    font-size:13px;
+}
+
+.empty-log i{font-size:32px;display:block;margin-bottom:8px;color:#cbd5e0}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<div class="card">
+
+  <!-- Header -->
+  <div class="atm-header">
+    <div class="atm-icon"><i class="ti ti-building-bank"></i></div>
+    <div>
+      <div class="atm-title">ATM Machine</div>
+      <div class="atm-sub">Secure self-service banking</div>
+    </div>
+  </div>
+
+  <!-- Account Panel -->
+  <div class="account-panel">
+    <div class="avatar" id="avatarEl"><i class="ti ti-user"></i></div>
+    <div class="acct-info">
+      <div class="acct-label">Account Holder</div>
+      <div class="acct-name" id="displayName" style="color:#a0aec0;font-style:italic">Not set</div>
+      <div class="acct-hint" id="acctHint">Set your name to begin</div>
+    </div>
+  </div>
+
+  <!-- Balance Strip -->
+  <div class="balance-strip">
+    <div class="stat">
+      <div class="stat-label"><i class="ti ti-wallet"></i> Current Balance</div>
+      <div class="stat-value" id="balanceDisplay">₱0.00</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label"><i class="ti ti-list"></i> Transactions</div>
+      <div class="stat-count" id="txnCount">0</div>
+    </div>
+  </div>
+
+  <!-- Name Input -->
+  <div class="section-label"><i class="ti ti-user-edit"></i> Account Holder Name</div>
+  <div class="name-row">
+    <input type="text" id="holderName" placeholder="e.g. Juan dela Cruz" onkeydown="if(event.key==='Enter')setName()">
+    <button onclick="setName()">Set Name</button>
+  </div>
+
+  <!-- Amount Input -->
+  <div class="section-label"><i class="ti ti-cash"></i> Transaction Amount</div>
+  <div class="amount-row">
+    <span class="peso-sign">₱</span>
+    <input type="number" id="amount" placeholder="0.00" min="0">
+  </div>
+
+  <!-- Transaction Buttons -->
+  <div class="txn-btns">
+    <button class="btn-txn" onclick="checkBalance()">
+      <i class="ti ti-eye"></i> Check Balance
+    </button>
+    <button class="btn-txn deposit" onclick="deposit()">
+      <i class="ti ti-arrow-down-circle"></i> Deposit
+    </button>
+    <button class="btn-txn withdraw" onclick="withdraw()">
+      <i class="ti ti-arrow-up-circle"></i> Withdraw
+    </button>
+  </div>
+
+  <!-- Message Box -->
+  <div class="msg-box" id="msgBox">
+    <i class="ti ti-info-circle" id="msgIcon" style="color:#a0aec0"></i>
+    <span id="msgText">Set your name, then choose a transaction.</span>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Transaction Log -->
+  <div class="section-label" style="margin-bottom:12px">
+    <i class="ti ti-receipt"></i> Transaction Log
+  </div>
+
+  <div class="log-wrap">
+    <table id="logTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Date &amp; Time</th>
+          <th>Account Holder</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>Balance</th>
+        </tr>
+      </thead>
+      <tbody id="logBody">
+        <tr>
+          <td colspan="6">
+            <div class="empty-log">
+              <i class="ti ti-clock"></i>
+              No transactions yet
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</div>
+
+<script>
+let balance = 0;
+let log = [];
+let accountName = "";
+
+function initials(n) {
+    return n.trim().split(/\s+/).map(w => w[0].toUpperCase()).slice(0, 2).join("");
+}
+
+function setName() {
+    let n = document.getElementById("holderName").value.trim();
+    if (!n) { showMsg("Enter a valid account holder name.", "warning"); return; }
+
+    accountName = n;
+
+    let av = document.getElementById("avatarEl");
+    av.innerHTML = initials(n);
+    av.style.fontStyle = "normal";
+
+    let dn = document.getElementById("displayName");
+    dn.textContent = n;
+    dn.style.color = "";
+    dn.style.fontStyle = "";
+
+    document.getElementById("acctHint").textContent = "Account active";
+    showMsg("Welcome, " + n + ". Choose a transaction to continue.", "info");
+}
+
+function checkBalance() {
+    if (!guard()) return;
+    showMsg(accountName + " — current balance is ₱" + balance.toFixed(2) + ".", "info");
+    addLog("Balance Inquiry", 0);
+}
+
+function deposit() {
+    if (!guard()) return;
+    let a = amt();
+    if (!a) return;
+    balance += a;
+    updateBalance();
+    showMsg("₱" + a.toFixed(2) + " deposited. New balance: ₱" + balance.toFixed(2) + ".", "success");
+    addLog("Deposit", a);
+    document.getElementById("amount").value = "";
+}
+
+function withdraw() {
+    if (!guard()) return;
+    let a = amt();
+    if (!a) return;
+    if (a > balance) { showMsg("Insufficient funds for this withdrawal.", "danger"); return; }
+    balance -= a;
+    updateBalance();
+    showMsg("₱" + a.toFixed(2) + " withdrawn. New balance: ₱" + balance.toFixed(2) + ".", "success");
+    addLog("Withdraw", a);
+    document.getElementById("amount").value = "";
+}
+
+function guard() {
+    if (!accountName) { showMsg("Set your account holder name first.", "warning"); return false; }
+    return true;
+}
+
+function amt() {
+    let v = parseFloat(document.getElementById("amount").value);
+    if (isNaN(v) || v <= 0) { showMsg("Enter a valid amount greater than zero.", "warning"); return null; }
+    return v;
+}
+
+function updateBalance() {
+    document.getElementById("balanceDisplay").textContent = "₱" + balance.toFixed(2);
+}
+
+function showMsg(text, type) {
+    let icons = {
+        info: "ti-info-circle",
+        success: "ti-circle-check",
+        warning: "ti-alert-triangle",
+        danger: "ti-circle-x"
+    };
+    let colors = {
+        info: "#4299e1",
+        success: "#276749",
+        warning: "#b45309",
+        danger: "#9b2c2c"
+    };
+    document.getElementById("msgText").textContent = text;
+    let ic = document.getElementById("msgIcon");
+    ic.className = "ti " + icons[type || "info"];
+    ic.style.color = colors[type || "info"];
+}
+
+function addLog(type, amount) {
+    log.push({
+        dt: new Date().toLocaleString(),
+        holder: accountName,
+        type: type,
+        amount: amount,
+        balance: balance
+    });
+
+    document.getElementById("txnCount").textContent = log.length;
+
+    let tbody = document.getElementById("logBody");
+    let badgeClass = type === "Deposit" ? "deposit" : type === "Withdraw" ? "withdraw" : "inquiry";
+    let badgeIcon = type === "Deposit" ? "ti-arrow-down-circle" : type === "Withdraw" ? "ti-arrow-up-circle" : "ti-eye";
+
+    tbody.innerHTML = log.slice().reverse().map(function(item, i) {
+        return "<tr>" +
+            "<td style='color:#a0aec0'>" + (log.length - i) + "</td>" +
+            "<td style='color:#718096;font-size:12px'>" + item.dt + "</td>" +
+            "<td style='font-weight:500'>" + item.holder + "</td>" +
+            "<td><span class='badge " + badgeClass + "'><i class='ti " + badgeIcon + "'></i>" + item.type + "</span></td>" +
+            "<td>" + (item.amount > 0 ? "₱" + item.amount.toFixed(2) : "—") + "</td>" +
+            "<td style='font-weight:600'>₱" + item.balance.toFixed(2) + "</td>" +
+            "</tr>";
+    }).join("");
+}
+</script>
+
+</body>
+</html>
